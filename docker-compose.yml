@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${AMPLIFY_ENV}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${AMPLIFY_ENV}

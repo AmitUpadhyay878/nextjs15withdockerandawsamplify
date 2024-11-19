@@ -1,0 +1,27 @@
+version: 1
+applications:
+  - appRoot: /
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            # Install dependencies
+            - npm ci
+        build:
+          commands:
+            # Build the Docker image for the specified environment
+            - docker build --build-arg NODE_ENV=$AMPLIFY_ENV -t nextjs-app:$AMPLIFY_ENV .
+      artifacts:
+        baseDirectory: / # Docker containers don't produce artifacts, so no artifacts here
+      cache:
+        paths:
+          - node_modules/**/*
+    customHeaders:
+      - pattern: "**/*"
+        headers:
+          - key: Cache-Control
+            value: max-age=0, no-cache, no-store, must-revalidate
+    environment:
+      variables:
+        # Set default environment variable for Amplify to pass to Docker
+        AMPLIFY_ENV: production

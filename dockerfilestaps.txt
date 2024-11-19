@@ -1,0 +1,75 @@
+Development
+docker build --build-arg NODE_ENV=development -t nextjs-app:dev .
+
+Staging
+docker build --build-arg NODE_ENV=staging -t nextjs-app:staging .
+
+Production
+docker build --build-arg NODE_ENV=production -t nextjs-app:prod .
+
+
+
+Running the Container
+Run the container with the appropriate environment:
+
+Development
+docker run -p 3000:3000 -e NODE_ENV=development nextjs-app:dev
+
+Staging
+docker run -p 3000:3000 -e NODE_ENV=staging nextjs-app:staging
+
+Production
+docker run -p 3000:3000 -e NODE_ENV=production nextjs-app:prod
+
+
+
+Advantages
+Single Dockerfile for All Environments:
+
+No need for separate files for each stage.
+Reduces duplication and maintenance overhead.
+Dynamic Behavior:
+
+Dependencies and build processes adjust automatically based on the specified environment.
+Smaller Production Images:
+
+For production, the final image contains only the built files and production dependencies.
+Flexibility:
+
+Supports all stages (development, staging, production) with simple argument changes.
+
+
+-------------------------------------------------
+
+*Example Commands for Each Environment*
+When deploying with AWS Amplify, you can switch environments by specifying the AMPLIFY_ENV variable:
+
+Production Environment
+AMPLIFY_ENV=production
+
+Staging Environment
+AMPLIFY_ENV=staging
+
+Development Environment
+AMPLIFY_ENV=development
+
+AWS Amplify uses these variables in the build step to build the Docker image accordingly.
+
+---------------------------------------------------
+
+
+
+Configure Amplify Environment Variables
+In the AWS Amplify Console:
+
+Navigate to your app's "Build settings."
+Add environment variables:
+AMPLIFY_ENV (e.g., development, staging, or production).
+Any other required variables (e.g., API keys, database URLs).
+
+Test Locally Before Deploying
+Before pushing changes to Amplify, ensure your Docker setup works locally:
+
+# Build and run locally
+docker build --build-arg NODE_ENV=production -t nextjs-app:production .
+docker run -p 3000:3000 nextjs-app:production
