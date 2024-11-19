@@ -1,27 +1,25 @@
 version: 1
 applications:
-  - appRoot: /
+  - appRoot: /   # Path to your root app directory
     frontend:
       phases:
         preBuild:
           commands:
-            # Install dependencies
-            - npm ci
+            - echo "Installing dependencies..."
+            - npm ci  # Install dependencies before building the Docker image
         build:
           commands:
-            # Build the Docker image for the specified environment
-            - docker build --build-arg NODE_ENV=$AMPLIFY_ENV -t nextjs-app:$AMPLIFY_ENV .
+            - echo "Building Docker image..."
+            - docker build --build-arg NODE_ENV=$AMPLIFY_ENV -t nextjs-app:$AMPLIFY_ENV .  # Build Docker image
+            - docker tag nextjs-app:$AMPLIFY_ENV $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/nextjs-app:$AMPLIFY_ENV
+            - echo "Pushing Docker image to ECR..."
+            - $(aws ecr get-login --no-include-email --region $AWS_REGION)  # Login to ECR
+            - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/nextjs-app:$AMPLIFY_ENV  # Push Docker image to AWS ECR
       artifacts:
-        baseDirectory: / # Docker containers don't produce artifacts, so no artifacts here
+        baseDirectory: /  # Docker containers don't produce artifacts, so set base directory to root
       cache:
         paths:
-          - node_modules/**/*
-    customHeaders:
-      - pattern: "**/*"
-        headers:
-          - key: Cache-Control
-            value: max-age=0, no-cache, no-store, must-revalidate
+          - node_modules/**/*  # Cache dependencies to speed up builds
     environment:
       variables:
-        # Set default environment variable for Amplify to pass to Docker
-        AMPLIFY_ENV: production
+        AMPLIFY_ENV: production  # Set the environment variable to control Docker build (production, staging, etc.)
